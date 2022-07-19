@@ -15,11 +15,11 @@
 
 
 --
--- Create schema example_db
+-- Create schema tmp_example_db
 --
-DROP DATABASE IF EXISTS `example_db`;
-CREATE DATABASE IF NOT EXISTS `example_db`;
-USE `example_db`;
+DROP DATABASE IF EXISTS `tmp_example_db`;
+CREATE DATABASE IF NOT EXISTS `tmp_example_db`;
+USE `tmp_example_db`;
 
 --
 -- Definition of table `example_table`
@@ -27,13 +27,13 @@ USE `example_db`;
 
 DROP TABLE IF EXISTS `example_table`;
 CREATE TABLE `example_table` (
-  `field01` int(3) NOT NULL default '1',
-  `field02` varchar(50) NOT NULL default '',
+  `field01` int(3) NOT NULL default '0',
+  `field02` varchar(20) NOT NULL default '',
   `field03` int(11) default NULL,
-  `field04` varchar(200) NOT NULL default '',
-  `field06` varchar(50) NOT NULL default '',
-  `field07` int(11) default '0',
-  `field08` int(11) default NULL,
+  `field04` int(4) NOT NULL default '7',
+  `field07` varchar(50) NOT NULL default '',
+  `field08` int(11) default '0',
+  `field09` int(11) default NULL,
   PRIMARY KEY  (`field01`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

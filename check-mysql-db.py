@@ -167,9 +167,9 @@ for k in tmp_database.keys():
           if litem[4] != item[4]:
             print("'%s' default value has not the same default value: '%s' vs the wanted '%s'" % (item[0], litem[4], item[4]))
           if litem[5] != item[5] and litem[5] != None and item[5] != None:
-            print("%s has precision (%d) setted in different way (%d)" % (item[0], litem[5], item[5]))
+            print("'%s' has precision (%d) setted in different way (%d)" % (item[0], litem[5], item[5]))
           if litem[6] != item[6] and litem[6] != None and item[6] != None:
-            print("%s the max number of characters (%d) is not the same (%d)" % (item[0], litem[6], item[6]))
+            print("'%s' has the max number of characters different: %d vs the wanted %d" % (item[0], litem[6], item[6]))
         index += 1
 
   else:
