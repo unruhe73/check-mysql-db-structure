@@ -58,14 +58,14 @@ else:
   return_value = os.system("mysql -u " + dbuser + " -p" + dbpasswd + " < " + dbpath)
 
 if return_value != 0:
-  print("not possible to import database to compare!")
+  print("it's NOT possible to import database to compare!")
   sys.exit (1)
 
 try:
   tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "tmp_" + dbname )
 
 except MySQLdb.OperationalError as e:
-  print("tmp_" + dbname + " is not present as local database. I can't compare!")
+  print("tmp_" + dbname + " is not in the list as a local database. I can't compare!")
   sys.exit(1)
 
 tmp_cursor_table = tmpConn.cursor()
@@ -174,7 +174,7 @@ for k in tmp_database.keys():
 
   else:
     not_existing_table_from_installed_db.append( k )
-    print("table '%s' in the local database is absent, considered the reference file database '%s'" % (k, dbpath))
+    print("table '%s' is NOT into the local database, considered the reference database file '%s'" % (k, dbpath))
 
 for k in database.keys ():
   if k in tmp_database.keys ():
@@ -213,7 +213,7 @@ else:
 count = 0
 for k in database.keys ():
   if k not in tmp_database.keys ():
-    print("*** '" + k + "' table into the local database is extra!")
+    print("*** '" + k + "' table into the local database is extra, you could delete it!")
     checked = 0
     count += 1
 
