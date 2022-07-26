@@ -1,4 +1,5 @@
-USAGE
+## USAGE
+
 How to use this tool to compare two databases?
 Suppose you have local installation of MySQL.
 
@@ -17,14 +18,14 @@ This is a convention used by this script:
 
 After that I can execute:
 
-./check-mysql-db.py example_db correct_example_db.sql
+`./check-mysql-db.py example_db correct_example_db.sql`
 
 Or:
 
-python3 check-mysql-db.py example_db correct_example_db.sql
+`python3 check-mysql-db.py example_db correct_example_db.sql`
 
 So you will see:
-
+```
 version 0.1
 dbname: example_db
 tmpDB: tmp_example_db
@@ -44,3 +45,4 @@ field 'field09' is missing
 in the database to verify, field 'field06' seems to be extra (you could remove it)...
 
 1 table has a different structure!
+```
