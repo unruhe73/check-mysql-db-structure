@@ -2,10 +2,56 @@
 
 # You need python-mysql or python-mysqldb packet
 
+import os
+from os.path import exists
+import sys
 import MySQLdb
 import string
-import os
-import sys
+import getopt
+
+def usage():
+  print(sys.argv[0] + " --dbname=database_name --filename=sql_filename [--user=database_user --password=database_password  --debug]")
+  print("OR")
+  print(sys.argv[0] + " -n database_name -f sql_filename [-u database_user -p database_password -d]")
+
+
+def get_parameters():
+  dbuser = ""
+  dbpasswd = ""
+  dbname = ""
+  sqlfilename = ""
+  outdebug = False
+
+  try:
+    opts, args = getopt.getopt(sys.argv[1:], "hvdu:p:n:f:", ["help", "version", "debug", "user=", "password=", "dbname=", "filename="])
+
+  except getopt.GetoptError as err:
+    # print help information and exit:
+    print(err)  # will print something like "option -a not recognized"
+    usage()
+    sys.exit(2)
+
+  for output, argument in opts:
+    if output in ("-h", "--help"):
+      usage()
+      sys.exit()
+    elif output in ("-v", "--version"):
+      print("check_mysql_db v" + check_mysql_db_version)
+      sys.exit()
+    elif output in ("-d", "--debug"):
+      outdebug = True
+    elif output in ("-u", "--user"):
+      dbuser = argument
+    elif output in ("-p", "--password"):
+      dbpasswd = argument
+    elif output in ("-n", "--dbname"):
+      dbname = argument
+    elif output in ("-f", "--filename"):
+      sqlfilename = argument
+    else:
+      assert False, "unhandled option"
+
+  return dbuser, dbpasswd, dbname, sqlfilename, outdebug
 
 
 def lookfor(field, table):
@@ -18,26 +64,44 @@ def lookfor(field, table):
   return -1
 
 
+check_mysql_db_version = "0.1"
 dbhost = "localhost"
-dbuser = "root"
-dbpasswd = ""
-dbname = ""
-dbpath = ""
-tmpDB = ""
+dbuser, dbpasswd, dbname, sqlfilename, outdebug = get_parameters()
 
-print("version 0.1")
+if dbuser == "":
+  dbuser = "root"
 
-if len(sys.argv) != 3: # the program name and one argument
-  # stop the program and print an error message
-  sys.exit("give me the database name and its filename reference path")
+if dbname == "":
+  print("*** ERROR: I need a database name!")
+  print("\nYou need to execute the application in this way:")
+  usage()
+  sys.exit(2)
 
-dbname = sys.argv[1]
+if sqlfilename == "":
+  print("*** ERROR: I need the SQL filename!")
+  print("\nYou need to execute the application in this way:")
+  usage()
+  sys.exit(3)
+
+if not exists(sqlfilename):
+  print("*** ERROR: I got '" + sqlfilename + "' as an SQL file name, but it doesn't exist, try again!")
+  print("\nYou need to execute the application in this way:")
+  usage()
+  sys.exit(3)
+
 tmpDB = "tmp_" + dbname
-dbpath = sys.argv[2]
 
-print("dbname: " + dbname)
-print("tmpDB: " + tmpDB)
-print("dbpath: " + dbpath)
+if outdebug:
+  print("*** Parameters I got:")
+  print("database user: " + dbuser)
+  if dbpasswd == "":
+    print("database password: None")
+  else:
+    print("database password: " + dbpasswd)
+  print("database name: " + dbname)
+  print("SQL filename: " + sqlfilename)
+  print("temporary database name: " + tmpDB)
+  print("")
 
 try:
   tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "mysql")
@@ -48,21 +112,21 @@ except MySQLdb.OperationalError as error:
   print("\tuser: %s\n\tpassword: %s\n" % (dbuser, dbpasswd))
   sys.exit(1) 
 
-tmpConn.close ()
+tmpConn.close()
 
 # add "-pPASSWORD" if root user uses a password
 if dbpasswd == "":
-  return_value = os.system("mysql -u " + dbuser + " < " + dbpath)
+  return_value = os.system("mysql -u " + dbuser + " < " + sqlfilename)
 
 else:
-  return_value = os.system("mysql -u " + dbuser + " -p" + dbpasswd + " < " + dbpath)
+  return_value = os.system("mysql -u " + dbuser + " -p" + dbpasswd + " < " + sqlfilename)
 
 if return_value != 0:
   print("it's NOT possible to import database to compare!")
   sys.exit (1)
 
 try:
-  tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "tmp_" + dbname )
+  tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "tmp_" + dbname)
 
 except MySQLdb.OperationalError as e:
   print("tmp_" + dbname + " is not in the list as a local database. I can't compare!")
@@ -72,7 +136,7 @@ tmp_cursor_table = tmpConn.cursor()
 tmp_cursor_table.execute("show tables")
 
 try:
-  conn = MySQLdb.connect(dbhost, dbuser, dbpasswd, dbname )
+  conn = MySQLdb.connect(dbhost, dbuser, dbpasswd, dbname)
 
 except MySQLdb.OperationalError as e:
   print(dbname + " is not present as local database. I can't compare!")
@@ -103,7 +167,7 @@ while (table_index < cursor_table.rowcount):
       break
 
     else:
-      lista.append( [ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ] )
+      lista.append([ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ])
 
   database[row[0] ] = lista
   lista = []
@@ -129,9 +193,9 @@ while (table_index < tmp_cursor_table.rowcount):
       break
 
     else:
-      lista.append( [ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ] )
+      lista.append([ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ])
 
-  tmp_database[row[0] ] = lista
+  tmp_database[row[0]] = lista
   lista = []
 
   table_index += 1
@@ -146,18 +210,18 @@ not_existing_table_from_installed_db = []
 count = 0
 for k in tmp_database.keys():
   if k in database.keys():
-    if tmp_database[ k ] != database[ k ]:
+    if tmp_database[k] != database[k]:
       print("********** table '" + k + "' is NOT the same!")
       dim = len( tmp_database[ k ] )
       index = 0
       while index < dim:
-        item = tmp_database[ k ][ index ]
-        pos = lookfor(item[0], database[ k ])
+        item = tmp_database[k][index]
+        pos = lookfor(item[0], database[k])
         if pos == -1:
           print("field '%s' is missing" % item[0])
 
         else:
-          litem = database[ k ][ pos ]
+          litem = database[k][pos]
           if litem[1] != item[1]:
             print("'%s' has different type" % item[0])
           if litem[2] != item[2]:
@@ -173,23 +237,23 @@ for k in tmp_database.keys():
         index += 1
 
   else:
-    not_existing_table_from_installed_db.append( k )
-    print("table '%s' is NOT into the local database, considered the reference database file '%s'" % (k, dbpath))
+    not_existing_table_from_installed_db.append(k)
+    print("table '%s' is NOT into the local database, considered the reference database file '%s'" % (k, sqlfilename))
 
-for k in database.keys ():
-  if k in tmp_database.keys ():
-    if database[ k ] != tmp_database[ k ]:
-      dim = len( database[ k ] )
+for k in database.keys():
+  if k in tmp_database.keys():
+    if database[k] != tmp_database[k]:
+      dim = len(database[k])
       index = 0
       while index < dim:
-        item = database[ k ][ index ]
-        if lookfor(item[0], tmp_database[ k ]) == -1:
+        item = database[k][index]
+        if lookfor(item[0], tmp_database[k]) == -1:
           print("in the database to verify, field '%s' seems to be extra (you could remove it)..." % item[0])
         index += 1
       count += 1
 
   else:
-    not_existing_table_from_installed_db.append( k )
+    not_existing_table_from_installed_db.append(k)
     print("table '" + k + "' seems to be an extra")
 
 
@@ -227,7 +291,7 @@ else:
     checked = 0
 
 if checked == 1:
-  tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "tmp_" + dbname )
+  tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "tmp_" + dbname)
   tmp_cursor = tmpConn.cursor()
 
   conn = MySQLdb.connect(dbhost, dbuser, dbpasswd, dbname )
@@ -257,17 +321,17 @@ if checked == 1:
                 j = 0
                 while j < len ( rowfield ):
                   if rowfield[ j ] != None:
-                    query += " %s = '%s' and " % ( database [ k ][ j ][ 0 ], rowfield[ j ])
+                    query += " %s = '%s' and " % (database[k][j][0], rowfield[j])
                   else:
-                    query += " %s = NULL and " % database [ k ][ j ][ 0 ]
+                    query += " %s = NULL and " % database[k][j][0]
                   j += 1
                 query += "1=1"
-                queryCursor.execute ( query )
+                queryCursor.execute(query)
                 if queryCursor.rowcount == 0:
                   j = 0
                   query = ""
-                  while j < len ( rowfield ):
-                    query += " %s='%s'" % ( database [ k ][ j ][ 0 ], rowfield[ j ])
+                  while j < len(rowfield):
+                    query += " %s='%s'" % (database[k][j][0], rowfield[j])
                     j += 1
                   print("missing or NOT correctly corresponds: (%s)" % query)
               i += 1
