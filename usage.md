@@ -38,7 +38,7 @@ OR
 `debug` is optional. If you specify it, you'll get the list of the parameters the app is using.
 
 
-## To GET THE VERSION NUMBER
+## TO GET THE VERSION NUMBER
 `python check-mysql-db.py -v`
 
 OR
