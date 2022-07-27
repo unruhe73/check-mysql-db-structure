@@ -19,13 +19,17 @@ This is a convention used by this script:
 
 ## TO GET HELP
 `python check-mysql-db.py -h`
+
 OR
+
 `python check-mysql-db.py --help`
 
 And you get:
 ```
 ./check-mysql-db.py --dbname=database_name --filename=sql_filename [--user=database_user --password=database_password  --debug]
+
 OR
+
 ./check-mysql-db.py -n database_name -f sql_filename [-u database_user -p database_password -d]
 ```
 
@@ -36,7 +40,9 @@ OR
 
 ## To GET THE VERSION NUMBER
 `python check-mysql-db.py -v`
+
 OR
+
 `python check-mysql-db.py --version`
 
 And you get:
