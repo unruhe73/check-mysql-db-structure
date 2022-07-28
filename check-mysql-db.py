@@ -462,3 +462,4 @@ if outdebug:
     print("")
 
 compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug)
+os.remove(tmp_database_filename)
