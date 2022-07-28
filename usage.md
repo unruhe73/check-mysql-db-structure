@@ -11,7 +11,7 @@ After that, you will have example_db as a new local database.
 This is a starting point for this script:
 
 1. I have a local database `example_db` I'm not sure it's correct.
-2. I have a reference database I know it's correct and the filename is `correct_example_db.sql`.
+2. I have an SQL file reference for the database I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
 3. You need MySQLdb python package installed: `pip install MySQLdb` or use directly the one from you Linux distro.
 
 ## TO GET HELP
