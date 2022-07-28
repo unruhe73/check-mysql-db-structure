@@ -7,15 +7,12 @@ Install a database as the one into the file example_db.sql:
 mysql -u root < example_db.sql
 
 After that, you will have example_db as a new local database.
-Is this correct? You need a `tmp_example_db` that is the correct and wanted database.
-Just one thing.
-The reference database, the one that is correct. Need to add a "tmp_" in front of the name of the installed database to check.
-This because the Python tool will create the database to check with the local database, so it cannot have the same name.
-This is a convention used by this script:
+
+This is a starting point for this script:
 
 1. I have a local database `example_db` I'm not sure it's correct.
-2. I have a reference database I know it's correct and it has `tmp_` in front of the name.
-3. You need MySQLdb python package installed: `pip3 install MySQLdb` or use directly the one from you Linux distro.
+2. I have a reference database I know it's correct and the filename is `correct_example_db.sql`.
+3. You need MySQLdb python package installed: `pip install MySQLdb` or use directly the one from you Linux distro.
 
 ## TO GET HELP
 `python check-mysql-db.py -h`
@@ -58,9 +55,10 @@ database password: None
 database name: example_db
 SQL filename: correct_example_db.sql
 temporary database name: tmp_example_db
+temporary database filename: tmp_example_db.sql
 
 *** in the first place the number of tables is correct.
-  +++ counted 1 tables
+    +++ counted 1 tables
 ********** table 'example_table' is NOT the same!
 'field01' default value has not the same default value: '1' vs the wanted '0'
 'field02' has the max number of characters different: 50 vs the wanted 20
