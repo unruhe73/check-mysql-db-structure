@@ -226,7 +226,7 @@ def compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug, tmp_data
 
     table_index = 0
     database = {}
-    lista = []
+    fields_list = []
     while (table_index < cursor_table.rowcount):
         row = cursor_table.fetchone ()
         cursor_field = conn.cursor ()
@@ -239,10 +239,10 @@ def compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug, tmp_data
                 break
 
             else:
-                lista.append([ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ])
+                fields_list.append([ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ])
 
-        database[row[0] ] = lista
-        lista = []
+        database[row[0]] = fields_list
+        fields_list = []
 
         table_index += 1
 
@@ -252,7 +252,7 @@ def compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug, tmp_data
 
     table_index = 0
     tmp_database = {}
-    lista = []
+    fields_list = []
     while (table_index < tmp_cursor_table.rowcount):
         row = tmp_cursor_table.fetchone()
         cursor_field = tmpConn.cursor()
@@ -265,10 +265,10 @@ def compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug, tmp_data
                 break
 
             else:
-                lista.append([ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ])
+                fields_list.append([ rowfield[0], rowfield[1], rowfield[2], rowfield[3], rowfield[4], rowfield[5], rowfield[6] ])
 
-        tmp_database[row[0]] = lista
-        lista = []
+        tmp_database[row[0]] = fields_list
+        fields_list = []
 
         table_index += 1
 
