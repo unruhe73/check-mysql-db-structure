@@ -10,12 +10,12 @@ After that, you will have example_db as a new local database.
 
 This is a starting point for this script:
 
-1. I have a local database `example_db` stored into the server I'm not sure it's correct.
-2. I have an SQL file reference for the database I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
+1. I have a local database `example_db` stored into the server and I'm not sure it's correct.
+2. I have an SQL file reference for the database and I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
 3. You need MySQLdb python package installed: `pip install MySQLdb` or use directly the one from you Linux distro.
 
-If into the `correct_example_db.sql` SQL file you have the `USE` SQL instruction, the python script can detect on its own the database name to compare, if not, you need to specify
-with the '-n' parameter into the command line, or using '--dbname=' one.
+If into the `correct_example_db.sql` SQL file you have the `USE` SQL instruction, the python script can detect on its own the database name to compare with, if not, you need to specify it
+with the '-n' parameter on the command line, or using '--dbname=' one.
 
 ## TO GET HELP
 `python check-mysql-db.py -h`
