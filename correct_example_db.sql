@@ -15,13 +15,6 @@
 
 
 --
--- Create schema tmp_example_db
---
-DROP DATABASE IF EXISTS `example_db`;
-CREATE DATABASE IF NOT EXISTS `example_db`;
-USE `example_db`;
-
---
 -- Definition of table `example_table`
 --
 

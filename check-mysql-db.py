@@ -10,9 +10,9 @@ import string
 import getopt
 
 def usage():
-    print(sys.argv[0] + " --dbname=database_name --filename=sql_filename [--user=database_user --password=database_password    --debug]")
+    print(sys.argv[0] + " --filename=sql_filename [--user=database_user --password=database_password --dbname=database_name --debug]")
     print("OR")
-    print(sys.argv[0] + " -n database_name -f sql_filename [-u database_user -p database_password -d]")
+    print(sys.argv[0] + " -f sql_filename [-u database_user -p database_password -n database_name -d]")
 
 
 def get_parameters():
@@ -73,9 +73,8 @@ def is_sql_drop_database(sql_line, dbname):
     if splitted_line[0].upper() == "DROP" and splitted_line[1].upper() == "DATABASE":
         is_drop_database = True
         n1 = dbname
-        n2 = "tmp_" + dbname
         database_name = splitted_line[len(splitted_line) - 1].replace(';', '').replace('`', '')
-        if n1 == database_name or n2 == database_name:
+        if n1 == database_name:
             is_wanted_database = True
 
     return is_drop_database, is_wanted_database, database_name
@@ -109,6 +108,12 @@ def create_tmp_sql_file(database_sql_file, correct_database_name, tmp_database_f
     tmp_database_name = "tmp_" + correct_database_name
     new_database_file = open(tmp_database_filename, 'w')
 
+    file_read_error, count_drop, count_create, count_use = count_drop_create_use_database(database_sql_file)
+    if count_drop == 0:
+        new_database_file.write("DROP DATABASE IF EXISTS `" + tmp_database_name + "`;\n")
+        new_database_file.write("CREATE DATABASE IF NOT EXISTS `" + tmp_database_name + "`;\n")
+        new_database_file.write("USE `" + tmp_database_name + "`;\n\n\n");
+
     with open(database_sql_file) as fp:
         for line in fp:
             is_drop_database, is_wanted_database, database_name = is_sql_drop_database(line, correct_database_name)
@@ -129,13 +134,13 @@ def create_tmp_sql_file(database_sql_file, correct_database_name, tmp_database_f
 
 
 def count_drop_create_use_database(database_sql_file):
-    error = True
+    file_read_error = True
     count_drop = 0
     count_create = 0
     count_use = 0
 
     if exists(database_sql_file):
-        error = False
+        file_read_error = False
 
         with open(database_sql_file) as fp:
             for line in fp:
@@ -147,10 +152,24 @@ def count_drop_create_use_database(database_sql_file):
                 elif splitted_line[0] == "USE":
                     count_use += 1
 
-    return error, count_drop, count_create, count_use
+    return file_read_error, count_drop, count_create, count_use
 
 
-def compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug):
+def getDatabaseName(database_sql_filename):
+    database_name = ""
+
+    if exists(database_sql_filename):
+        with open(database_sql_filename) as fp:
+            for line in fp:
+                splitted_line = line.strip().split(" ")
+                if splitted_line[0].upper() == "USE":
+                    database_name = splitted_line[len(splitted_line) - 1].replace(';', '').replace('`', '')
+                    break
+
+    return database_name
+
+
+def compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug, tmp_database_filename):
     try:
         tmpConn = MySQLdb.connect(dbhost, dbuser, dbpasswd, "mysql")
 
@@ -410,12 +429,6 @@ dbuser, dbpasswd, dbname, sql_filename, outdebug = get_parameters()
 if dbuser == "":
     dbuser = "root"
 
-if dbname == "":
-    print("*** ERROR: I need a database name!")
-    print("\nYou need to execute the application in this way:")
-    usage()
-    sys.exit(2)
-
 if sql_filename == "":
     print("*** ERROR: I need an SQL filename!")
     print("\nYou need to execute the application in this way:")
@@ -428,10 +441,8 @@ if not exists(sql_filename):
     usage()
     sys.exit(3)
 
-tmpDB = "tmp_" + dbname
-
-file_error, count_drop, count_create, count_use = count_drop_create_use_database(sql_filename)
-if not file_error:
+file_read_error, count_drop, count_create, count_use = count_drop_create_use_database(sql_filename)
+if not file_read_error:
     if count_drop > 1:
         print("*** ERROR: file '%s' contains %d 'DROP DATABASE' SQL instruction. It has to be just one!" % (sql_filename, count_drop))
         sys.exit(2)
@@ -445,8 +456,17 @@ else:
     print("*** ERROR: file '%s' doesn't exist!" % sql_filename)
     sys.exit(2)
 
+if dbname == "":
+    dbname = getDatabaseName(sql_filename)
+    if dbname == "":
+        print("*** ERROR: I need a database name!")
+        print("\nI can't detect it from '%s', you need to specify it in the parameters with the '-n' option." % sql_filename)
+        usage()
+        sys.exit(2)
+
+tmpDB = "tmp_" + dbname
 tmp_database_filename = tmpDB + ".sql"
-create_tmp_sql_file(sql_filename, "example_db", tmp_database_filename)
+create_tmp_sql_file(sql_filename, dbname, tmp_database_filename)
 
 if outdebug:
     print("*** Parameters I got:")
@@ -461,5 +481,5 @@ if outdebug:
     print("temporary database filename: " + tmp_database_filename)
     print("")
 
-compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug)
+compare_databases(dbuser, dbpasswd, dbname, sql_filename, outdebug, tmp_database_filename)
 os.remove(tmp_database_filename)
