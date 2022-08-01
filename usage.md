@@ -18,6 +18,8 @@ This is a starting point for the script to work:
 2. I have an SQL file reference for the database and I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
 3. You need mysqlclient python package installed: `pip install mysqlclient` or use directly the one from you Linux distro.
 
+`python-mysqlclient` is available on [github.com here](https://github.com/PyMySQL/mysqlclient){:target="_blank"}.
+
 If into the `correct_example_db.sql` SQL file you have the `USE` SQL instruction, the python script can detect on its own the database name to compare with, if not, you need to specify it
 with the '-n' parameter on the command line, or using '--dbname=' one.
 
