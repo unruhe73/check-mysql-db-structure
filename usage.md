@@ -2,7 +2,7 @@
 
 How to use this tool to compare two databases?
 Suppose you have local installation of MySQL.
-If you use Manjaro Linux and you have yet to install MariaDB give look at [here](https://www.linuxcapable.com/how-to-install-mariadb-on-manjaro-21-linux/){:target="_blank"}.
+If you use Manjaro Linux and you have yet to install MariaDB give look at [here](https://www.linuxcapable.com/how-to-install-mariadb-on-manjaro-21-linux/).
 Of course, I suggest to assign a password to root user.
 
 Install a database as the one into the file example_db.sql:
@@ -18,7 +18,7 @@ This is a starting point for the script to work:
 2. I have an SQL file reference for the database and I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
 3. You need mysqlclient python package installed: `pip install mysqlclient` or use directly the one from you Linux distro.
 
-`python-mysqlclient` is available on [github.com here](https://github.com/PyMySQL/mysqlclient){:target="_blank"}.
+`python-mysqlclient` is available on [github.com here](https://github.com/PyMySQL/mysqlclient).
 
 If into the `correct_example_db.sql` SQL file you have the `USE` SQL instruction, the python script can detect on its own the database name to compare with, if not, you need to specify it
 with the '-n' parameter on the command line, or using '--dbname=' one.
