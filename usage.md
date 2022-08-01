@@ -38,8 +38,11 @@ OR
 ```
 
 `server` is the host where you have your MySQL/MariaDB server operative. It's optional. If you don't assign it, it will be considered as `localhost`.
+
 `user` is optional. If you don't assign it, it will be user `root`.
+
 `password` is optional. If you have a database without password you don't need to specify it.
+
 `debug` is optional. If you specify it, you'll get the list of the parameters the app is using.
 
 
