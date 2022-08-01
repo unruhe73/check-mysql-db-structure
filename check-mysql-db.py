@@ -145,9 +145,9 @@ def count_drop_create_use_database(database_sql_file):
         with open(database_sql_file) as fp:
             for line in fp:
                 splitted_line = line.strip().upper().split(" ")
-                if splitted_line[0] == "DROP" and splitted_line[1].upper() == "DATABASE":
+                if splitted_line[0] == "DROP" and splitted_line[1] == "DATABASE":
                     count_drop += 1
-                elif splitted_line[0] == "CREATE" and splitted_line[1].upper() == "DATABASE":
+                elif splitted_line[0] == "CREATE" and splitted_line[1] == "DATABASE":
                     count_create += 1
                 elif splitted_line[0] == "USE":
                     count_use += 1
