@@ -39,7 +39,7 @@ class CheckMySQLDB:
                 self.logfile = open(self.log_filename, 'w')
                 self.logfile.write("check_mysql_db v" + str(self.check_mysql_db_version) + "\n\n")
             except FileNotFoundError as error:
-                print("*** Error: log filename '%s' is not writeble!\n" % self.log_filename)
+                print("*** Error: I cannot access log filename '%s' for witing!\n" % self.log_filename)
                 sys.exit(2)
 
         self.outdebug = outdebug
@@ -451,5 +451,6 @@ class CheckMySQLDB:
             tmpConn.close()
 
         os.remove(self.tmp_database_filename)
-        self.logfile.flush()
-        self.logfile.close()
+        if self.writeLogTo:
+            self.logfile.flush()
+            self.logfile.close()
