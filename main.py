@@ -10,9 +10,9 @@ import check_mysql_db
 
 
 def usage():
-    print(sys.argv[0] + " --filename=sql_filename [--server=database_host --user=database_user --password=database_password --dbname=database_name --debug]")
+    print(sys.argv[0] + " --filename=sql_filename [--server=database_host --user=database_user --password=database_password --dbname=database_name --write-log-to=log_filename --debug]")
     print("OR")
-    print(sys.argv[0] + " -f sql_filename [-s database_host -u database_user -p database_password -n database_name -d]")
+    print(sys.argv[0] + " -f sql_filename [-s database_host -u database_user -p database_password -n database_name -w log_filename -d]")
 
 
 def get_parameters():
@@ -22,10 +22,11 @@ def get_parameters():
     dbname = ""
     sql_filename = ""
     outdebug = False
+    logfile = ""
     check_mysql_db_version = "0.1"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hvdu:p:n:f:s:", ["help", "version", "debug", "user=", "password=", "dbname=", "filename=", "server="])
+        opts, args = getopt.getopt(sys.argv[1:], "hvdu:p:n:f:s:w:", ["help", "version", "debug", "user=", "password=", "dbname=", "filename=", "server=", "write-log-to="])
 
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -52,13 +53,15 @@ def get_parameters():
             dbname = argument
         elif output in ("-f", "--filename"):
             sql_filename = argument
+        elif output in ("-w", "--write-log-to"):
+            logfile = argument
         else:
             assert False, "unhandled option"
 
-    return dbhost, dbuser, dbpasswd, dbname, sql_filename, outdebug
+    return dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug
 
-dbhost, dbuser, dbpasswd, dbname, sql_filename, outdebug = get_parameters()
-checkMySQLDB = check_mysql_db.CheckMySQLDB(dbhost, dbuser, dbpasswd, dbname, sql_filename, outdebug)
+dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug = get_parameters()
+checkMySQLDB = check_mysql_db.CheckMySQLDB(dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug)
 
 if checkMySQLDB.error() == 1:
     print("*** ERROR: I need a database name!")

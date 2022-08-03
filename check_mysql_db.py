@@ -10,7 +10,7 @@ import string
 import getopt
 
 class CheckMySQLDB:
-    def __init__(self, dbhost, dbuser, dbpasswd, dbname, sql_filename, outdebug):
+    def __init__(self, dbhost, dbuser, dbpasswd, dbname, sql_filename, log_filename, outdebug):
         self.check_mysql_db_version = "0.1"
         self.error_code = 0
         self.dbhost = dbhost
@@ -32,6 +32,16 @@ class CheckMySQLDB:
                 self.error_code = 3
 
         self.sql_filename = sql_filename
+        self.log_filename = log_filename
+        self.writeLogTo = (not log_filename == "")
+        if self.writeLogTo:
+            try:
+                self.logfile = open(self.log_filename, 'w')
+                self.logfile.write("check_mysql_db v" + str(self.check_mysql_db_version) + "\n\n")
+            except FileNotFoundError as error:
+                print("*** Error: log filename '%s' is not writeble!\n" % self.log_filename)
+                sys.exit(2)
+
         self.outdebug = outdebug
 
         self.count_drop = 0
@@ -50,17 +60,25 @@ class CheckMySQLDB:
         self.tmp_database_filename = self.tmp_database_name + ".sql"
 
         if self.outdebug:
-            print("*** Parameters I got:")
-            print("database user: " + self.dbuser)
+            self.writeLog("*** Parameters I got:", True)
+            self.writeLog("database user: " + self.dbuser, True)
             if self.dbpasswd == "":
-                print("database password: None")
+                self.writeLog("database password: None", True)
             else:
-                print("database password: " + self.dbpasswd)
-            print("database name: " + self.dbname)
-            print("SQL filename: " + self.sql_filename)
-            print("temporary database name: " + self.tmp_database_name)
-            print("temporary database filename: " + self.tmp_database_filename)
-            print("")
+                self.writeLog("database password: " + self.dbpasswd, True)
+            self.writeLog("database name: " + self.dbname, True)
+            self.writeLog("SQL filename: " + self.sql_filename, True)
+            self.writeLog("temporary database name: " + self.tmp_database_name, True)
+            self.writeLog("temporary database filename: " + self.tmp_database_filename, True)
+            self.writeLog("", True)
+
+
+    def writeLog(self, text, on_screen=False):
+        if self.writeLogTo:
+            self.logfile.write(text + "\n")
+
+        if on_screen:
+            print(text)
 
 
     def version(self):
@@ -237,11 +255,11 @@ class CheckMySQLDB:
         cursor_table.execute("show tables")
 
         if cursor_table.rowcount == tmp_cursor_table.rowcount:
-            print("*** in the first place the number of tables is correct.")
-            print("    +++ counted %d tables" % cursor_table.rowcount)
+            self.writeLog("*** in the first place the number of tables is correct.")
+            self.writeLog("    +++ counted %d tables" % cursor_table.rowcount)
 
         else:
-            print("*** I got a different number of tables as in the reference database: %d vs the wanted %d!" % (cursor_table.rowcount, tmp_cursor_table.rowcount))
+            self.writeLog("*** I got a different number of tables as in the reference database: %d vs the wanted %d!" % (cursor_table.rowcount, tmp_cursor_table.rowcount))
 
         table_index = 0
         database = {}
@@ -302,32 +320,32 @@ class CheckMySQLDB:
         for k in tmp_database.keys():
             if k in database.keys():
                 if tmp_database[k] != database[k]:
-                    print("********** table '" + k + "' is NOT the same!")
+                    self.writeLog("********** table '" + k + "' is NOT the same!")
                     dim = len( tmp_database[ k ] )
                     index = 0
                     while index < dim:
                         item = tmp_database[k][index]
                         pos = self._lookfor(item[0], database[k])
                         if pos == -1:
-                            print("field '%s' is missing" % item[0])
+                            self.writeLog("field '%s' is missing" % item[0])
                         else:
                             litem = database[k][pos]
                             if litem[1] != item[1]:
-                                print("'%s' has different type" % item[0])
+                                self.writeLog("'%s' has different type" % item[0])
                             if litem[2] != item[2]:
-                                print("'%s' has a different nullable" % item[0])
+                                self.writeLog("'%s' has a different nullable" % item[0])
                             if litem[3] != item[3]:
-                                print("'%s' has NOT the same key configuration: '%s' vs '%s'" % (item[0], litem[3], item[3]))
+                                self.writeLog("'%s' has NOT the same key configuration: '%s' vs '%s'" % (item[0], litem[3], item[3]))
                             if litem[4] != item[4]:
-                                print("'%s' default value has not the same default value: '%s' vs the wanted '%s'" % (item[0], litem[4], item[4]))
+                                self.writeLog("'%s' default value has not the same default value: '%s' vs the wanted '%s'" % (item[0], litem[4], item[4]))
                             if litem[5] != item[5] and litem[5] != None and item[5] != None:
-                                print("'%s' has precision (%d) setted in different way (%d)" % (item[0], litem[5], item[5]))
+                                self.writeLog("'%s' has precision (%d) setted in different way (%d)" % (item[0], litem[5], item[5]))
                             if litem[6] != item[6] and litem[6] != None and item[6] != None:
-                                print("'%s' has the max number of characters different: %d vs the wanted %d" % (item[0], litem[6], item[6]))
+                                self.writeLog("'%s' has the max number of characters different: %d vs the wanted %d" % (item[0], litem[6], item[6]))
                         index += 1
             else:
                 not_existing_table_from_installed_db.append(k)
-                print("table '%s' is NOT into the local database, considered the reference database file '%s'" % (k, self.sql_filename))
+                self.writeLog("table '%s' is NOT into the local database, considered the reference database file '%s'" % (k, self.sql_filename))
 
         for k in database.keys():
             if k in tmp_database.keys():
@@ -337,41 +355,41 @@ class CheckMySQLDB:
                     while index < dim:
                         item = database[k][index]
                         if self._lookfor(item[0], tmp_database[k]) == -1:
-                            print("in the database to verify, field '%s' seems to be extra (you could remove it)..." % item[0])
+                            self.writeLog("in the database to verify, field '%s' seems to be extra (you could remove it)..." % item[0])
                         index += 1
                     count += 1
             else:
                 not_existing_table_from_installed_db.append(k)
-                print("table '" + k + "' seems to be an extra")
+                self.writeLog("table '" + k + "' seems to be an extra")
 
         checked = 0
         if count == 0:
             if len(not_existing_table_from_installed_db) == 0:
-                print("\n*** database structure is correct")
+                self.writeLog("\n*** database structure is correct")
             else:
-                print("\n*** database structure is incomplete!")
+                self.writeLog("\n*** database structure is incomplete!")
             checked = 1
         else:
             if count == 1:
-                print("\n1 table has a different structure!")
+                self.writeLog("\n1 table has a different structure!")
             else:
-                print("\n%d tables have different structure!" % count)
+                self.writeLog("\n%d tables have different structure!" % count)
 
         # check extra tables (should be not there but it's not a real problem)
         count = 0
         for k in database.keys():
             if k not in tmp_database.keys():
-                print("*** '" + k + "' table into the local database is extra, you could delete it!")
+                self.writeLog("*** '" + k + "' table into the local database is extra, you could delete it!")
                 checked = 0
                 count += 1
 
         if count == 1:
-            print("\n*** 1 table exceed in the local database: how come?")
+            self.writeLog("\n*** 1 table exceed in the local database: how come?")
             checked = 0
 
         else:
             if count > 1:
-                print("\n*** %d tables exceed in the local database: how come?" % count)
+                self.writeLog("\n*** %d tables exceed in the local database: how come?" % count)
                 checked = 0
 
         if checked == 1:
@@ -391,9 +409,8 @@ class CheckMySQLDB:
 
                     if rowfield1[0] != rowfield2[0]:
                         if rowfield1[0] > 0:
-                            print("\n\nrows number for '%s' maybe is NOT correct: it should be %s (according to the reference database file) but in local it's : %s" % (k, rowfield1[0], rowfield2[0]))
-                            print("do you want to take a look at the differences (Y/N)?")
-                            answer = raw_input()
+                            self.writeLog("\n\nrows number for '%s' maybe is NOT correct: it should be %s (according to the reference database file) but in local it's : %s" % (k, rowfield1[0], rowfield2[0]))
+                            answer = input("do you want to take a look at the differences (Y/N)?")
                             if answer == "Y":
                                 tmp_cursor.execute("select * from %s" % k)
                                 i = 0
@@ -417,7 +434,7 @@ class CheckMySQLDB:
                                             while j < len(rowfield):
                                                 query += " %s='%s'" % (database[k][j][0], rowfield[j])
                                                 j += 1
-                                            print("missing or NOT correctly corresponds: (%s)" % query)
+                                            self.writeLog("missing or NOT correctly corresponds: (%s)" % query)
                                     i += 1
 
             tmp_cursor.execute("DROP DATABASE `" + self.tmp_database_name + "`")
@@ -434,3 +451,5 @@ class CheckMySQLDB:
             tmpConn.close()
 
         os.remove(self.tmp_database_filename)
+        self.logfile.flush()
+        self.logfile.close()

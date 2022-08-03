@@ -8,7 +8,7 @@ Of course, I suggest to assign a password to root user.
 Install a database as the one into the file example_db.sql:
 mysql -u root -p < example_db.sql
 
-After that, you will have example_db as a new local database.
+After that, you have example_db as a new local database.
 
 The `main.py` script uses the python class `CheckMySQLDB` defined in the file `check_mysql_db.py`.
 
@@ -32,9 +32,9 @@ OR
 
 And you get:
 ```
-./main.py --filename=sql_filename [--server=database_host --user=database_user --password=database_password --dbname=database_name --debug]
+./main.py --filename=sql_filename [--server=database_host --user=database_user --password=database_password --dbname=database_name --write-log-to=log_filename --debug]
 OR
-./main.py -f sql_filename [-s database_host -u database_user -p database_password -n database_name -d]
+./main.py -f sql_filename [-s database_host -u database_user -p database_password -n database_name -w log_filename -d]
 ```
 
 `server` is the host where you have your MySQL/MariaDB server operative. It's optional. If you don't assign it, it will be considered as `localhost`.
@@ -44,6 +44,8 @@ OR
 `password` is optional. If you have a database without password you don't need to specify it.
 
 `debug` is optional. If you specify it, you'll get the list of the parameters the app is using.
+
+`write-log-to` is optional. If you specify it than, the outupt will be redirected to the log_filename file.
 
 
 ## TO GET THE VERSION NUMBER
