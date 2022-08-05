@@ -12,10 +12,10 @@ After that, you have example_db as a new local database.
 
 The `main.py` script uses the python class `CheckMySQLDB` defined in the file `check_mysql_db.py`.
 
-This is a starting point for the script to work:
+These are the pre-conditions for the script to work:
 
-1. I have a local database `example_db` stored into the server and I'm not sure it's correct.
-2. I have an SQL file reference for the database and I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
+1. You have a local database `example_db` stored into the server and I'm not sure it's correct.
+2. You have an SQL file reference for the database and I know it's correct (in the example is `correct_example_db.sql` but you can name it as you wish).
 3. You need mysqlclient python package installed: `pip install mysqlclient` or use directly the one from you Linux distro.
 
 `python-mysqlclient` is available on [github.com here](https://github.com/PyMySQL/mysqlclient).
@@ -23,7 +23,7 @@ This is a starting point for the script to work:
 If into the `correct_example_db.sql` SQL file you have the `USE` SQL instruction, the python script can detect on its own the database name to compare with, if not, you need to specify it
 with the '-n' parameter on the command line, or using '--dbname=' one.
 
-## TO GET HELP
+## How to get the help menu
 `python main.py -h`
 
 OR
@@ -39,16 +39,16 @@ OR
 
 `server` is the host where you have your MySQL/MariaDB server operative. It's optional. If you don't assign it, it will be considered as `localhost`.
 
-`user` is optional. If you don't assign it, it will be user `root`.
+`user` is the database username and is optional. If you don't assign it, it will be replace by a `root` user as default.
 
-`password` is optional. If you have a database without password you don't need to specify it.
+`password` is the database password for the specified database user. It is an optional value. If you have a database without a password you don't need to specify it.
 
-`debug` is optional. If you specify it, you'll get the list of the parameters the app is using.
+`debug` is optional and as default value is assigned to `False`. If you specify it as `True`, you'll get some debug output as the list of the parameters the class is using to compare the two databases.
 
 `write-log-to` is optional. If you specify it than, the outupt will be redirected to the log_filename file.
 
 
-## TO GET THE VERSION NUMBER
+## How to get the version number
 `python main.py -v`
 
 OR
