@@ -54,9 +54,13 @@ Needed parameters:
 
 `password` is the database password for the specified database user. It is an optional value. If you have a database without a password you don't need to specify it.
 
+`dbname` is the database name, but it could be detected directly from the SQL_FILENAME into filename option if this is not present.
+
 `debug` is optional and as default value is assigned to `False`. If you specify it as `True`, you'll get some debug output as the list of the parameters the class is using to compare the two databases.
 
 `write-log-to` is optional. If you specify it than the outupt will be redirected to the LOG_FILENAME file.
+
+`filename` is the SQL filename containing SQL statements that defined the correct database structure. It can include database name too by `USE` statement.
 
 
 ## How to get the version number
