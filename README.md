@@ -98,7 +98,7 @@ More datails in the file usage.md.
 
 ## License
 
-heck-mysql-db-structure (c) 2022 Giovanni Venturi and contributors
+check-mysql-db-structure (c) 2022 Giovanni Venturi and contributors
 
 SPDX-License-Identifier: GPL-3.0
 
