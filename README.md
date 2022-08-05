@@ -77,9 +77,20 @@ OR
 
 And you get:
 ```
-./main.py --filename=sql_filename [--server=database_host --user=database_user --password=database_password --dbname=database_name --write-log-to=log_filename --debug]
-OR
-./main.py -f sql_filename [-s database_host -u database_user -p database_password -n database_name -w log_filename -d]
+./main.py is a python script to compare two MySQL/MariaDB databases structure
+
+Usage: ./main.py [OPTIONS]
+
+Optional parameters:
+-d,--debug                            write as much as information possible
+-s,--server=DATABASE_HOST             MySQL/MAriaDB server address
+-u,--user=DATABASE_USER               database username
+-p,--password=DATABASE_PASSOWRD       database password
+-n,--dbname=DATABASE_NAME             database name
+-w,--write-log-to=LOG_FILENAME        log filename where you get output results
+
+Needed parameters:
+-f,--filename=SQL_FILENAME            SQL filename to use to compare with the remote server database
 ```
 
 `server` is the host where you have your MySQL/MariaDB server operative. It's optional. If you don't assign it, it will be considered as `localhost`.
@@ -90,7 +101,7 @@ OR
 
 `debug` is optional and as default value is assigned to `False`. If you specify it as `True`, you'll get some debug output as the list of the parameters the class is using to compare the two databases.
 
-`write-log-to` is optional. If you specify it than, the outupt will be redirected to the log_filename file.
+`write-log-to` is optional. If you specify it than the outupt will be redirected to the LOG_FILENAME file.
 
 More datails in the file usage.md.
 

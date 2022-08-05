@@ -10,9 +10,20 @@ import check_mysql_db
 
 
 def usage():
-    print(sys.argv[0] + " --filename=sql_filename [--server=database_host --user=database_user --password=database_password --dbname=database_name --write-log-to=log_filename --debug]")
-    print("OR")
-    print(sys.argv[0] + " -f sql_filename [-s database_host -u database_user -p database_password -n database_name -w log_filename -d]")
+    print(sys.argv[0] + " is a python script to compare two MySQL/MariaDB databases structure")
+    print("")
+    print("Usage: " + sys.argv[0] + " [OPTIONS]")
+    print("")
+    print("Optional parameters:")
+    print("-d,--debug                            write as much as information possible")
+    print("-s,--server=DATABASE_HOST             MySQL/MAriaDB server address")
+    print("-u,--user=DATABASE_USER               database username")
+    print("-p,--password=DATABASE_PASSOWRD       database password")
+    print("-n,--dbname=DATABASE_NAME             database name")
+    print("-w,--write-log-to=LOG_FILENAME        log filename where you get output results")
+    print("")
+    print("Needed parameters:")
+    print("-f,--filename=SQL_FILENAME            SQL filename to use to compare with the remote server database")
 
 
 def get_parameters():
