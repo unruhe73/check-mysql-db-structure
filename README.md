@@ -1,4 +1,9 @@
-# check-mysql-db-structure
+# Check MySQL DB Structure
+
+[![GitHub license](https://img.shields.io/badge/license-GPL-blue)](https://github.com/unruhe73/check-mysql-db-structure/blob/main/LICENSE)
+[![Made with Python 3](https://img.shields.io/badge/python-3.x-powered)](https://www.python.org/)
+
+
 This project is a tool to compare two MySQL or MariaDB databases structure showing these details in form of text in a terminal, or writing them into a log file as you prefer. This tool is available by the python class `CheckMySQLDB`.
 
 ![Python](./python-powered-w-100x40.png)
