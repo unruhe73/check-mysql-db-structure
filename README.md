@@ -82,20 +82,27 @@ OR
 
 And you get:
 ```
-./main.py is a python script to compare two MySQL/MariaDB databases structure
+./main.py -h
+usage: main.py [-h] [-s SERVER] [-u USER] [-p PASSWORD] [-n DBNAME] [-w WRITE_LOG_TO] [-d] [-v] filename
 
-Usage: ./main.py [OPTIONS]
+A python script to compare two MySQL/MariaDB databases structure
 
-Optional parameters:
--d,--debug                            write as much as information possible
--s,--server=DATABASE_HOST             MySQL/MAriaDB server address
--u,--user=DATABASE_USER               database username
--p,--password=DATABASE_PASSOWRD       database password
--n,--dbname=DATABASE_NAME             database name
--w,--write-log-to=LOG_FILENAME        log filename where you get output results
+positional arguments:
+  filename              SQL filename to use to compare with the remote server database
 
-Needed parameters:
--f,--filename=SQL_FILENAME            SQL filename to use to compare with the remote server database
+options:
+  -h, --help            show this help message and exit
+  -s SERVER, --server SERVER
+                        MySQL/MAriaDB server address
+  -u USER, --user USER  database username
+  -p PASSWORD, --password PASSWORD
+                        database password
+  -n DBNAME, --dbname DBNAME
+                        database name
+  -w WRITE_LOG_TO, --write-log-to WRITE_LOG_TO
+                        log filename where you get output results
+  -d, --debug           write as much information as possible
+  -v, --version         print the version of the script
 ```
 
 `server` is the host where you have your MySQL/MariaDB server operative. It's optional. If you don't assign it, it will be considered as `localhost`.
