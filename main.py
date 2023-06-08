@@ -21,7 +21,7 @@ def get_parameters():
 
     parser = argparse.ArgumentParser(description="A python script to compare two MySQL/MariaDB databases structure")
     pyname = sys.argv[0]
-    parser.add_argument("-s", "--server", help="MySQL/MAriaDB server address", type=str)
+    parser.add_argument("-s", "--server", help="MySQL/MariaDB server address", type=str)
     parser.add_argument("-u", "--user", help="database username", type=str)
     parser.add_argument("-p", "--password", help="database password", type=str)
     parser.add_argument("-n", "--dbname", help="database name", type=str)
