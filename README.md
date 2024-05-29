@@ -60,7 +60,7 @@ the parameters of the CheckMySQLDB() are all necessary:
 
 `sql_filename`: is the filename of the SQL server containing the correct wanted database on the dbhost server.
 
-`logfile`: specify a text filename it will be created to write the result of the compare into. If it's an empty string than the results will be showed on the screen.
+`logfile`: specify a text filename it will be created to write the result of the compare into. If it's an empty string than the results will be showed on the terminal.
 
 `outdebug`: it has to be assigned as a boolen value: `True` or `False`. If you assign it as `True`, you'll get some debug output as the list of the parameters the class is using to compare the two databases.
 
@@ -115,7 +115,7 @@ options:
 
 `debug` is optional and as default value is assigned to `False`. If you specify it as `True`, you'll get some debug output as the list of the parameters the class is using to compare the two databases.
 
-`write-log-to` is optional. If you specify it than the outupt will be redirected to the LOG_FILENAME file.
+`write-log-to` is optional. If you specify it than the outupt will be redirected to the LOG_FILENAME file, otherwise it's going to write into the check_database.log filename.
 
 `filename` is the SQL filename containing SQL statements that defined the correct database structure. It can include database name too by `USE` statement.
 

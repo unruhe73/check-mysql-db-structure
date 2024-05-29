@@ -25,7 +25,7 @@ def get_parameters():
     parser.add_argument("-u", "--user", help="database username", type=str)
     parser.add_argument("-p", "--password", help="database password", type=str)
     parser.add_argument("-n", "--dbname", help="database name", type=str)
-    parser.add_argument("-w", "--write-log-to", help="log filename where you get output results", type=str)
+    parser.add_argument("-w", "--write-log-to", help="log filename where you get output results (default is check_database.log)", type=str)
     parser.add_argument("-d", "--debug", help="write as much information as possible", action="store_true")
     parser.add_argument("-v", "--version", help="print the version of the script", action="store_true")
     parser.add_argument("filename", help="SQL filename to use to compare with the remote server database")

@@ -50,7 +50,7 @@ options:
   -n DBNAME, --dbname DBNAME
                         database name
   -w WRITE_LOG_TO, --write-log-to WRITE_LOG_TO
-                        log filename where you get output results
+                        log filename where you get output results (default is check_database.log)
   -d, --debug           write as much information as possible
   -v, --version         print the version of the script
 ```
