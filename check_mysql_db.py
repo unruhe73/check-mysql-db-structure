@@ -109,7 +109,7 @@ class CheckMySQLDB:
 
 
     def sqlFilename(self):
-        return self.sql_file
+        return self.sql_filename
 
 
     def _lookfor(self, field, table):
