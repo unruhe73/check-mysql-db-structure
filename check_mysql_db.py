@@ -8,10 +8,12 @@ import sys
 import MySQLdb
 import string
 import getopt
+import re
+
 
 class CheckMySQLDB:
     def __init__(self, dbhost, dbuser, dbpasswd, dbname, sql_filename, log_filename, outdebug):
-        self.check_mysql_db_version = "0.1"
+        self.check_mysql_db_version = "0.2"
         self.error_code = 0
         self.dbhost = dbhost
 
@@ -32,13 +34,10 @@ class CheckMySQLDB:
                 self.error_code = 3
 
         self.sql_filename = sql_filename
-        self.log_filename = log_filename
         self.outdebug = outdebug
-        if log_filename:
-            self.writeLogTo = True
-        else:
-            self.writeLogTo = False
-            self.outdebug = True
+        self.writeLogTo = True
+        if not log_filename:
+            self.log_filename = "check_database.log"
 
         if self.writeLogTo:
             try:
@@ -49,8 +48,13 @@ class CheckMySQLDB:
                 sys.exit(2)
 
         self.count_drop = 0
+        self.drop_db = ""
+
         self.count_create = 0
+        self.create_db = ""
+
         self.count_use = 0
+        self.use_db = ""
         self._count_drop_create_use_database()
 
         if self.count_drop > 1:
@@ -63,25 +67,24 @@ class CheckMySQLDB:
         self.tmp_database_name = "tmp_" + self.dbname
         self.tmp_database_filename = self.tmp_database_name + ".sql"
 
-        if self.outdebug:
-            self.writeLog("*** Parameters I got:")
-            self.writeLog("database user: " + self.dbuser)
-            if self.dbpasswd == "":
-                self.writeLog("database password: None")
-            else:
-                self.writeLog("database password: " + self.dbpasswd)
-            self.writeLog("database name: " + self.dbname)
-            self.writeLog("SQL filename: " + self.sql_filename)
-            self.writeLog("temporary database name: " + self.tmp_database_name)
-            self.writeLog("temporary database filename: " + self.tmp_database_filename)
-            self.writeLog("")
+        self.writeLog("*** Command line parameters:")
+        self.writeLog("database user: " + self.dbuser)
+        if self.dbpasswd == "":
+            self.writeLog("database password: None")
+        else:
+            self.writeLog("database password: " + self.dbpasswd)
+        self.writeLog("database name: " + self.dbname)
+        self.writeLog("SQL filename: " + self.sql_filename)
+        self.writeLog("temporary database name: " + self.tmp_database_name)
+        self.writeLog("temporary database filename: " + self.tmp_database_filename)
+        self.writeLog()
 
 
-    def writeLog(self, text):
+    def writeLog(self, text = ""):
         if self.writeLogTo:
             self.logfile.write(text + "\n")
 
-        if not self.writeLogTo or self.outdebug:
+        if self.outdebug:
             print(text)
 
 
@@ -122,6 +125,35 @@ class CheckMySQLDB:
         return -1
 
 
+    def _cleanLine(self, line):
+        # Define the pattern for matching comments
+        pattern = re.compile(r'/\*.*?\*/', re.DOTALL)
+
+        # Substitute the comments with an empty string
+        removed_chars = re.sub(pattern, '', line)
+
+        # Remove ';' and '`'
+        result = removed_chars.replace(' ;', '').replace(';', '').replace('`', '').replace('\n', '').replace('  ', ' ')
+
+        return result.split(' ')
+
+
+    def _setDatabaseName(self, line, sql_keyword):
+        keyword = sql_keyword.upper()
+        clean_line = self._cleanLine(line)
+
+        if keyword == "DROP":
+            self.drop_db = clean_line[len(clean_line) - 1]
+            self.writeLog("DROP database: " + self.drop_db)
+        elif keyword == "CREATE":
+            self.create_db = clean_line[len(clean_line) - 1]
+            self.writeLog("CREATE database: " + self.create_db)
+        elif keyword == "USE":
+            self.use_db = clean_line[len(clean_line) - 1]
+            self.writeLog("USE database: " + self.use_db)
+            self.writeLog()
+
+
     def _count_drop_create_use_database(self):
         if self.error_code == 0 or self.error_code == 1:
             self.count_drop = 0
@@ -132,32 +164,42 @@ class CheckMySQLDB:
                 for line in fp:
                     splitted_line = line.strip().split(" ")
                     if splitted_line[0].upper() == "DROP" and splitted_line[1].upper() == "DATABASE":
+                        self._setDatabaseName(line, "drop")
                         self.count_drop += 1
                     elif splitted_line[0].upper() == "CREATE" and splitted_line[1].upper() == "DATABASE":
+                        self._setDatabaseName(line, "create")
                         self.count_create += 1
                     elif splitted_line[0].upper() == "USE":
+                        self._setDatabaseName(line, "use")
                         self.count_use += 1
-                        if self.dbname == "":
-                            self.dbname = splitted_line[len(splitted_line) - 1].replace(';', '').replace('`', '')
-                            if self.dbname == "":
-                                self.error_code = 1
-                            else:
+
+                if self.drop_db == self.create_db and self.create_db == self.use_db:
+                    if not self.drop_db:
+                        if not self.dbname:
+                            self.error_code = 1
+                        else:
+                            self.error_code = 0
+                    else:
+                        if not self.dbname:
+                            self.dbname = self.use_db
+                            self.error_code = 0
+                        else:
+                            if self.dbname == self.use_db:
                                 self.error_code = 0
+                            else:
+                                self.error_code = 7
+                else:
+                    self.error_code = 8
 
 
     def _is_sql_drop_database(self, sql_line):
         is_drop_database = False
-        is_wanted_database = False
-        database_name = ""
         splitted_line = sql_line.strip().split(" ")
 
         if splitted_line[0].upper() == "DROP" and splitted_line[1].upper() == "DATABASE":
             is_drop_database = True
-            database_name = splitted_line[len(splitted_line) - 1].replace(';', '').replace('`', '')
-            if self.dbname == database_name:
-                is_wanted_database = True
 
-        return is_drop_database, is_wanted_database, database_name
+        return is_drop_database
 
 
     def _is_sql_create_database(self, sql_line):
@@ -184,23 +226,16 @@ class CheckMySQLDB:
         if self.error_code == 0:
             new_database_file = open(self.tmp_database_filename, 'w')
             if self.count_drop == 0:
-                new_database_file.write("DROP DATABASE IF EXISTS `" + tmp_database_name + "`;\n")
-                new_database_file.write("CREATE DATABASE IF NOT EXISTS `" + tmp_database_name + "`;\n")
-                new_database_file.write("USE `" + tmp_database_name + "`;\n\n\n");
+                new_database_file.write("DROP DATABASE IF EXISTS `" + self.tmp_database_name + "`;\n")
+                new_database_file.write("CREATE DATABASE IF NOT EXISTS `" + self.tmp_database_name + "`;\n")
+                new_database_file.write("USE `" + self.tmp_database_name + "`;\n\n\n");
 
             with open(self.sql_filename) as fp:
                 for line in fp:
-                    is_drop_database, is_wanted_database, database_name = self._is_sql_drop_database(line)
-
-                    if is_drop_database:
-                        if is_wanted_database:
-                            new_database_file.write("DROP DATABASE IF EXISTS `" + self.tmp_database_name + "`;\n")
-                            new_database_file.write("CREATE DATABASE IF NOT EXISTS `" + self.tmp_database_name + "`;\n")
-                            new_database_file.write("USE `" + self.tmp_database_name + "`;\n");
-                        else:
-                            print("SQL file contains '%s' database definition that is *NOT* the wanted database '%s'" % (database_name, correct_database_name))
-                            os.remove(self.tmp_database_filename)
-                            sys.exit(2)
+                    if self._is_sql_drop_database(line):
+                        new_database_file.write("DROP DATABASE IF EXISTS `" + self.tmp_database_name + "`;\n")
+                        new_database_file.write("CREATE DATABASE IF NOT EXISTS `" + self.tmp_database_name + "`;\n")
+                        new_database_file.write("USE `" + self.tmp_database_name + "`;\n");
                     else:
                         if not self._is_sql_create_database(line) and not self._is_sql_use_database(line):
                             new_database_file.write(line)

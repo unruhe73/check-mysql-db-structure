@@ -82,5 +82,11 @@ elif checkMySQLDB.error() == 5:
 elif checkMySQLDB.error() == 6:
     print("*** ERROR: file '%s' contains %d 'USE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
     sys.exit(2)
+elif checkMySQLDB.error() == 7:
+    print("*** ERROR: file '%s' contains database reference different from the name specified on the command line with -n: %s!" % (checkMySQLDB.sqlFilename(), dbname))
+    sys.exit(2)
+elif checkMySQLDB.error() == 8:
+    print("*** ERROR: file '%s' contains confused database reference!" % sql_filename)
+    sys.exit(2)
 
 checkMySQLDB.compare_databases()
