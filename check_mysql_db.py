@@ -33,7 +33,13 @@ class CheckMySQLDB:
 
         self.sql_filename = sql_filename
         self.log_filename = log_filename
-        self.writeLogTo = (not log_filename == "")
+        self.outdebug = outdebug
+        if log_filename:
+            self.writeLogTo = True
+        else:
+            self.writeLogTo = False
+            self.outdebug = True
+
         if self.writeLogTo:
             try:
                 self.logfile = open(self.log_filename, 'w')
@@ -41,8 +47,6 @@ class CheckMySQLDB:
             except FileNotFoundError as error:
                 print("*** Error: I cannot access log filename '%s' for witing!\n" % self.log_filename)
                 sys.exit(2)
-
-        self.outdebug = outdebug
 
         self.count_drop = 0
         self.count_create = 0

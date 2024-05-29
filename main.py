@@ -52,8 +52,6 @@ def get_parameters():
 
     if args.write_log_to:
         logfile = args.write_log_to
-    else:
-        logfile = "checkdb.log"
 
     sql_filename = args.filename
 
