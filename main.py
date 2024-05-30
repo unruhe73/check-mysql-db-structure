@@ -99,7 +99,7 @@ elif checkMySQLDB.error() == 7:
     print("*** ERROR: file '%s' contains database reference different from the name specified on the command line with -n: %s!" % (checkMySQLDB.sqlFilename(), dbname))
     sys.exit(2)
 elif checkMySQLDB.error() == 8:
-    print("*** ERROR: file '%s' contains confused database reference! See the log into %s for more details." % (sql_filename, checkMySQLDB.log_filename))
+    print("*** ERROR: file '%s' contains confused database reference! See the log into %s for more details." % (sql_filename, os.path.abspath(checkMySQLDB.log_filename)))
     sys.exit(2)
 
 checkMySQLDB.compare_databases()
