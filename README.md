@@ -1,12 +1,13 @@
 # Check MySQL DB Structure
 
-[![GitHub license](https://img.shields.io/badge/license-GPL-blue)](https://github.com/unruhe73/check-mysql-db-structure/blob/main/LICENSE)
-[![Made with Python 3](https://img.shields.io/badge/python-3.x-powered)](https://www.python.org/)
+[![GitHub license](./license-GPL-blue.svg)](https://github.com/unruhe73/check-mysql-db-structure/blob/main/LICENSE)
+[![Made with Python 3](./python-3.x-powered.svg)](https://www.python.org/)
 
 
 This project is a tool to compare two MySQL or MariaDB databases structure showing these details in form of text in a terminal, or writing them into a log file as you prefer. This tool is available by the python class `CheckMySQLDB`.
 
 ![Python](./python-powered-w-100x40.png)
+![Produced-by-Human](./Produced-By-Human-Not-By-AI-Badge-black.png)
 
 ## Overview
 You need a database server host. Suppose you have local installation of MySQL.
@@ -23,7 +24,11 @@ You need to execute:
 
 `pip install mysqlclient`
 
-or install it directly through you Linux distro packages.
+or install it directly through you Linux distro packages. For example, if you're using Arch Linux or Manjaro Linux you can run:
+
+`sudo pacman -S python-mysqlclient`
+
+if you configured `pacman` command into `sudo`.
 
 ## Pre-conditions
 These are the pre-conditions for the script to work:
