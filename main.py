@@ -50,7 +50,12 @@ def get_parameters():
 
     if args.askpassword:
         if not dbpasswd:
-            dbpasswd = input("MySQL/MariaDB password: ")
+            try:
+                while not dbpasswd:
+                    dbpasswd = input("MySQL/MariaDB password: ")
+            except KeyboardInterrupt:
+                print("\n*** bye")
+                sys.exit(0)
         else:
             print("*** ERROR: you cannot assing the MySQL/MariaDB password and, at the same time, request it from command line!")
             sys.exit(2)
