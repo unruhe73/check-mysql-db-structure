@@ -9,6 +9,7 @@ import MySQLdb
 import string
 import getopt
 import re
+import shutil
 
 
 class CheckMySQLDB:
@@ -78,6 +79,14 @@ class CheckMySQLDB:
         self.writeLog("temporary database name: " + self.tmp_database_name)
         self.writeLog("temporary database filename: " + self.tmp_database_filename)
         self.writeLog()
+
+        binary_client = shutils.which("mariadb")
+        if not binary_client:
+            binary_client = shutils.which("mysql")
+
+        if not binary_client:
+            print("*** ERROR: sorry, but I can't find MySQL/MariaDB client on your system!")
+            sys.exit(2)
 
 
     def writeLog(self, text = ""):
@@ -266,9 +275,9 @@ class CheckMySQLDB:
 
             # add "-pPASSWORD" if root user uses a password
             if self.dbpasswd == "":
-                return_value = os.system("mysql -h " + self.dbhost + " -u " + self.dbuser + " < " + self.tmp_database_filename)
+                return_value = os.system(f"{binary_client} -h " + self.dbhost + " -u " + self.dbuser + " < " + self.tmp_database_filename)
             else:
-                return_value = os.system("mysql -h " + self.dbhost + " -u " + self.dbuser + " -p" + self.dbpasswd + " < " + self.tmp_database_filename)
+                return_value = os.system(f"{binary_client} -h " + self.dbhost + " -u " + self.dbuser + " -p" + self.dbpasswd + " < " + self.tmp_database_filename)
 
             if return_value != 0:
                 print("it's NOT possible to import database to compare!")
