@@ -24,6 +24,7 @@ def get_parameters():
     parser.add_argument("-s", "--server", help="MySQL/MariaDB server address", type=str)
     parser.add_argument("-u", "--user", help="database username", type=str)
     parser.add_argument("-p", "--password", help="database password", type=str)
+    parser.add_argument("-ap", "--askpassword", help="let the client request the mysql password", action="store_true")
     parser.add_argument("-n", "--dbname", help="database name", type=str)
     parser.add_argument("-w", "--write-log-to", help="log filename where you get output results (default is check_database.log)", type=str)
     parser.add_argument("-d", "--debug", help="write as much information as possible", action="store_true")
@@ -46,6 +47,13 @@ def get_parameters():
 
     if args.password:
         dbpasswd = args.password
+
+    if args.askpassword:
+        if not dbpasswd:
+            dbpasswd = input("MySQL/MariaDB password: ")
+        else:
+            print("*** ERROR: you cannot assing the MySQL/MariaDB password and, at the same time, request it from command line!")
+            sys.exit(2)
 
     if args.dbname:
         dbname = args.dbname

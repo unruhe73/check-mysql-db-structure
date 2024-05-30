@@ -80,9 +80,9 @@ class CheckMySQLDB:
         self.writeLog("temporary database filename: " + self.tmp_database_filename)
         self.writeLog()
 
-        binary_client = shutils.which("mariadb")
+        binary_client = shutil.which("mariadb")
         if not binary_client:
-            binary_client = shutils.which("mysql")
+            binary_client = shutil.which("mysql")
 
         if not binary_client:
             print("*** ERROR: sorry, but I can't find MySQL/MariaDB client on your system!")
