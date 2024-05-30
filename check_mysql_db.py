@@ -70,7 +70,7 @@ class CheckMySQLDB:
 
         self.writeLog("*** Command line parameters:")
         self.writeLog("database user: " + self.dbuser)
-        if self.dbpasswd == "":
+        if not self.dbpasswd:
             self.writeLog("database password: None")
         else:
             self.writeLog("database password: " + self.dbpasswd)
@@ -80,11 +80,11 @@ class CheckMySQLDB:
         self.writeLog("temporary database filename: " + self.tmp_database_filename)
         self.writeLog()
 
-        binary_client = shutil.which("mariadb")
-        if not binary_client:
-            binary_client = shutil.which("mysql")
+        self.binary_client = shutil.which("mariadb")
+        if not self.binary_client:
+            self.binary_client = shutil.which("mysql")
 
-        if not binary_client:
+        if not self.binary_client:
             print("*** ERROR: sorry, but I can't find MySQL/MariaDB client on your system!")
             sys.exit(2)
 
@@ -275,9 +275,9 @@ class CheckMySQLDB:
 
             # add "-pPASSWORD" if root user uses a password
             if self.dbpasswd == "":
-                return_value = os.system(f"{binary_client} -h " + self.dbhost + " -u " + self.dbuser + " < " + self.tmp_database_filename)
+                return_value = os.system(f"{self.binary_client} -h " + self.dbhost + " -u " + self.dbuser + " < " + self.tmp_database_filename)
             else:
-                return_value = os.system(f"{binary_client} -h " + self.dbhost + " -u " + self.dbuser + " -p" + self.dbpasswd + " < " + self.tmp_database_filename)
+                return_value = os.system(f"{self.binary_client} -h " + self.dbhost + " -u " + self.dbuser + " -p" + self.dbpasswd + " < " + self.tmp_database_filename)
 
             if return_value != 0:
                 print("it's NOT possible to import database to compare!")
