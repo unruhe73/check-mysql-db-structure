@@ -1,1 +1,3 @@
 __pycache__/
+check_database.log
+tmp_example_db.sql
