@@ -71,35 +71,36 @@ def get_parameters():
     return dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug
 
 
-dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug = get_parameters()
-checkMySQLDB = check_mysql_db.CheckMySQLDB(dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug)
+if __name__ == "__main__":
+    dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug = get_parameters()
+    checkMySQLDB = check_mysql_db.CheckMySQLDB(dbhost, dbuser, dbpasswd, dbname, sql_filename, logfile, outdebug)
 
-if checkMySQLDB.error() == 1:
-    print("*** ERROR: I need a database name!")
-    print("\nI can't detect it from '%s', you need to specify it in the parameters with the '-n' option." % sql_filename)
-    sys.exit(2)
-elif checkMySQLDB.error() == 2:
-    print("*** ERROR: I need an SQL filename!")
-    print("\nYou need to execute the application in this way:")
-    sys.exit(2)
-elif checkMySQLDB.error() == 3:
-    print("*** ERROR: I got '" + sql_filename + "' as an SQL file name, but it doesn't exist, try again!")
-    print("\nYou need to execute the application in this way:")
-    sys.exit(2)
-elif checkMySQLDB.error() == 4:
-    print("*** ERROR: file '%s' contains %d 'DROP DATABASE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
-    sys.exit(2)
-elif checkMySQLDB.error() == 5:
-    print("*** ERROR: file '%s' contains %d 'CREATE DATABASE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
-    sys.exit(2)
-elif checkMySQLDB.error() == 6:
-    print("*** ERROR: file '%s' contains %d 'USE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
-    sys.exit(2)
-elif checkMySQLDB.error() == 7:
-    print("*** ERROR: file '%s' contains database reference different from the name specified on the command line with -n: %s!" % (checkMySQLDB.sqlFilename(), dbname))
-    sys.exit(2)
-elif checkMySQLDB.error() == 8:
-    print("*** ERROR: file '%s' contains confused database reference! See the log into %s for more details." % (sql_filename, os.path.abspath(checkMySQLDB.log_filename)))
-    sys.exit(2)
+    if checkMySQLDB.error() == 1:
+        print("*** ERROR: I need a database name!")
+        print("\nI can't detect it from '%s', you need to specify it in the parameters with the '-n' option." % sql_filename)
+        sys.exit(2)
+    elif checkMySQLDB.error() == 2:
+        print("*** ERROR: I need an SQL filename!")
+        print("\nYou need to execute the application in this way:")
+        sys.exit(2)
+    elif checkMySQLDB.error() == 3:
+        print("*** ERROR: I got '" + sql_filename + "' as an SQL file name, but it doesn't exist, try again!")
+        print("\nYou need to execute the application in this way:")
+        sys.exit(2)
+    elif checkMySQLDB.error() == 4:
+        print("*** ERROR: file '%s' contains %d 'DROP DATABASE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
+        sys.exit(2)
+    elif checkMySQLDB.error() == 5:
+        print("*** ERROR: file '%s' contains %d 'CREATE DATABASE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
+        sys.exit(2)
+    elif checkMySQLDB.error() == 6:
+        print("*** ERROR: file '%s' contains %d 'USE' SQL instruction. It has to be just one!" % (checkMySQLDB.sqlFilename(), checkMySQLDB.sqlCounter()))
+        sys.exit(2)
+    elif checkMySQLDB.error() == 7:
+        print("*** ERROR: file '%s' contains database reference different from the name specified on the command line with -n: %s!" % (checkMySQLDB.sqlFilename(), dbname))
+        sys.exit(2)
+    elif checkMySQLDB.error() == 8:
+        print("*** ERROR: file '%s' contains confused database reference! See the log into %s for more details." % (sql_filename, os.path.abspath(checkMySQLDB.log_filename)))
+        sys.exit(2)
 
-checkMySQLDB.compare_databases()
+    checkMySQLDB.compare_databases()

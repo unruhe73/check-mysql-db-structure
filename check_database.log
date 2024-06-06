@@ -1,0 +1,14 @@
+check_mysql_db v0.2
+
+DROP database: example_db
+CREATE database: example_db
+USE database: example_db
+
+*** Command line parameters:
+database user: root
+database password: nexera2003
+database name: example_db
+SQL filename: example_db.sql
+temporary database name: tmp_example_db
+temporary database filename: tmp_example_db.sql
+
